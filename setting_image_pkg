@@ -1,0 +1,138 @@
+HOW TO SETUP:
+
+cd <path_to_workspace>/src
+catkin_create_pkg <package_name> roscpp image_transport cv_bridge
+
+
+Now:
+<your_workspcae>/src/<packag>/src
+
+paste publisher.cpp and subscriber.cpp here
+
+
+Open CMakelist.txt
+
+1. In place of find_package( .... )
+
+paste this same to same:
+
+find_package(catkin REQUIRED COMPONENTS
+  cv_bridge
+  image_transport
+  roscpp
+  sensor_msgs
+)
+find_package( OpenCV REQUIRED )
+
+2. in place of catkin_package
+paste this
+
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES roscvpkg
+  CATKIN_DEPENDS cv_bridge image_transport roscpp
+  #DEPENDS system_lib
+
+)
+
+3. 
+include_directories( .... )
+
+include_directories(
+ include
+  ${catkin_INCLUDE_DIRS}
+ ${OpenCV_INCLUDE_DIRS}
+)
+
+
+4. in place of add_executable( ... )
+ this 
+ 
+ 
+ add_executable(
+   my_publisher
+#${PROJECT_NAME}_node src/publisher.cpp
+src/publisher.cpp
+)
+
+ add_executable(
+   my_subscriber
+#${PROJECT_NAME}_node src/publisher.cpp
+src/subscriber.cpp
+)
+
+5.
+
+in place of target_link_libraries
+
+ target_link_libraries(
+ my_publisher
+ # ${PROJECT_NAME}_node
+   ${catkin_LIBRARIES}
+   ${OpenCV_LIBRARIES}
+ )
+
+  target_link_libraries(
+ my_subscriber
+ # ${PROJECT_NAME}_node
+   ${catkin_LIBRARIES}
+   ${OpenCV_LIBRARIES}
+ )
+
+Now CMakelist.txt file is ready
+Note: Do not disturb other code in CMake.txt Just edit stuff mentioned above.
+
+
+Open Package.xml (in text editor)
+
+Add these lines(if not there)
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_export_depend>cv_bridge</build_export_depend>
+  <build_export_depend>image_transport</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>image_transport</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+
+  
+  
+  
+Now Almost everyhing is done.
+
+Open terminal: 
+
+catkin build <package_name>
+
+if you get success message at last
+then there is no issue.
+
+
+
+just run command
+
+first start ros master
+
+in terminal: roscore
+
+then:
+
+rosrun <package_name> my_publisher 0
+
+(if 0 is not working then try 1 or -1 accordingly that your camera uses)
+
+open another window:
+
+rosrun <package_name> my_subscriber
+
+
+After editing publisher.cpp or subscriber.cpp, to get your changes reflected in output do catkin build <package_name>
+
+
+
+
+
